@@ -172,7 +172,7 @@ func NewCrawler(site *url.URL, cmd *cobra.Command) *Crawler {
 
 	// Set cookies
 	cookie, _ := cmd.Flags().GetString("cookie")
-	if cookie != "" && burpFile == "" {
+	if cookie != "" {
 		c.OnRequest(func(r *colly.Request) {
 			r.Headers.Set("Cookie", cookie)
 		})
@@ -180,15 +180,13 @@ func NewCrawler(site *url.URL, cmd *cobra.Command) *Crawler {
 
 	// Set headers
 	headers, _ := cmd.Flags().GetStringArray("header")
-	if burpFile == "" {
-		for _, h := range headers {
-			headerArgs := strings.SplitN(h, ":", 2)
-			headerKey := strings.TrimSpace(headerArgs[0])
-			headerValue := strings.TrimSpace(headerArgs[1])
-			c.OnRequest(func(r *colly.Request) {
-				r.Headers.Set(headerKey, headerValue)
-			})
-		}
+	for _, h := range headers {
+		headerArgs := strings.SplitN(h, ":", 2)
+		headerKey := strings.TrimSpace(headerArgs[0])
+		headerValue := strings.TrimSpace(headerArgs[1])
+		c.OnRequest(func(r *colly.Request) {
+			r.Headers.Set(headerKey, headerValue)
+		})
 	}
 
 	// Set User-Agent
